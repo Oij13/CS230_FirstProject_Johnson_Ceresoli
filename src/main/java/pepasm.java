@@ -15,8 +15,9 @@ import java.util.HashMap;
             instructionMap.put("ANDA", "C5");
             instructionMap.put("ASLA", "04");
             instructionMap.put("ASRA", "05");
-            instructionMap.put("CPBA", "C0");
+            instructionMap.put("CPBA", "B0");
             instructionMap.put("BRNE", "28");
+            instructionMap.put("ADDA", "60");
 
             addressingModeMap.put("i", "00");
             addressingModeMap.put("d", "16");
@@ -25,6 +26,10 @@ import java.util.HashMap;
                 String line;
                 StringBuilder machineCode = new StringBuilder();
                 while ((line = br.readLine()) != null) {
+                    line = line.trim();
+                    if (line.isEmpty()) {
+                        continue;
+                    }
                     System.out.println("Reading line: " + line);
                     String[] parts = line.split("\\s+");
 
@@ -35,8 +40,10 @@ import java.util.HashMap;
                             break;
                         }
                         if (parts.length >= 2) {
-                            String operand = parts[1].replace("0x", "").replace(",", "");
-
+                            String operand = parts[1];
+                            if (parts[1].contains("0x")) {
+                                operand = parts[1].replace("0x", "").replace(",", "");
+                            }
                             String address = addressingModeMap.get(parts[2]);
                             machineCode.append(instruction).append(operand).append(address);
 
