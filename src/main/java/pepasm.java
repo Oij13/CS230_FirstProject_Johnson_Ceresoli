@@ -51,11 +51,14 @@ public class pepasm {
                     machineCode.append(" zz");
                     break;
                 }
-                if (readLine.contains(":")) {
-                    continue;
+
+                String instructionLine = readLine;
+                if (readLine.contains(":")) { // Ignores function call
+                    instructionLine = readLine.substring(readLine.indexOf(":") + 1).trim();
                 }
 
-                String[] parts = readLine.split("[,\\s]+"); // Splits line into parts when whitespace's present
+
+                String[] parts = instructionLine.split("[,\\s]+");// Splits line into parts when whitespace's present
                 String instruction = parts[0].trim();
 
 
@@ -78,7 +81,7 @@ public class pepasm {
                         System.out.println(operand);
                         machineCode.append(" 00 03");
                     } else if (operand.toString().startsWith("0x")) {
-                        operand = new StringBuilder(operand.toString().replace("0x", "").replace(",", "").toUpperCase());
+                        operand = new StringBuilder(operand.toString().replace("0x", ""));
                         while (operand.length() < 4) { // Adds 0s for operands missing 4
                             operand.insert(0, "0");
                         }
