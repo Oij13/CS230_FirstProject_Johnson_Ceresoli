@@ -27,10 +27,11 @@ public class pepasm {
         String fileName = args[0];
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) { // BufferedReader parses file from parameters
             ArrayList<String> lines = new ArrayList<>(); // Stores viable lines for machine code
-            ArrayList<String> symbolList = new ArrayList<>();
+            HashMap<String, Integer> symbolAddress = new HashMap<>();
             String line;
 
 
+            int currentAddress = 0;
             while ((line = br.readLine()) != null) {
                 line = line.trim(); // Trim rids line of excess spaces
                 if (line.isEmpty()) {
@@ -39,9 +40,10 @@ public class pepasm {
                 lines.add(line);
                 if (line.contains(":")) {
                     String symbol = line.substring(0, line.indexOf(":")).trim();
-                    symbolList.add(symbol);
-                    System.out.println(symbolList);
+                    symbolAddress.put(symbol,currentAddress);
+                    System.out.println(symbolAddress);
                 }
+                currentAddress = currentAddress+3;
             }
 
             StringBuilder machineCode = new StringBuilder();
@@ -77,9 +79,11 @@ public class pepasm {
                         machineCode.append(instructionMap.get(instruction));
                     }
                     StringBuilder operand = new StringBuilder(parts[1].trim());
-                    if (instruction.equals("BRNE") && symbolList.contains(operand.toString())) {// Adds address when BRNE and a symbol is present
+                    if (instruction.equals("BRNE")) {// Adds address when BRNE and a symbol is present
+
                         System.out.println(operand);
-                        machineCode.append(" 00 03");
+
+                        machineCode.append(" 00 0").append(symbolAddress.get(operand.toString()));
                     } else if (operand.toString().startsWith("0x")) {
                         operand = new StringBuilder(operand.toString().replace("0x", ""));
                         while (operand.length() < 4) { // Adds 0s for operands missing 4
